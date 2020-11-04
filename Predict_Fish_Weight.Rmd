@@ -34,11 +34,13 @@ Fishdata=read.csv("Fish.csv",header=TRUE)
 
 We are using numerical~numerical because the variable we are looking at are all numerical explanatory variables.
 
-#Results
+
+## Results
 
 <!--Divide this section into two sub-sections:  One for your descriptive  results and one for your inferential results.!-->
 
 ## Descriptive Results
+
 
 ```{r}
 Fishies=filter(Fishdata, Species == "Perch")
@@ -46,8 +48,26 @@ Fishies = select(Fishies, -Species)
 pairs(Fishies)
 ```
 
+I would estimate from the graph above that Length1 and width may be the best variables to try and estimate weight in a linear model for perch fish.
 
-### Graphical Descriptive Results
+```{r}
+FishiesS=filter(Fishdata, Species == "Smelt")
+FishiesS = select(FishiesS, -Species)
+pairs(FishiesS)
+```
+
+I would estimate from the graph above that Length1 and Length2 may be the best variables to try and estimate weight in a linear model for smelt fish.
+
+
+```{r}
+FishiesB=filter(Fishdata, Species == "Bream")
+FishiesB = select(FishiesB, -Species)
+pairs(FishiesB)
+```
+
+ I would estimate from the graph above that Length2 and Length3 may be the best variables to try and estimate weight in a linear model for bream fish.   
+    
+## Graphical Descriptive Results
 
 <!--Graphical results here.  Make sure to show your code.  Provide appropriate labels for axes, giving units if possible, and provide a good title for the graph, too.  Use the graphical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
@@ -55,13 +75,21 @@ pairs(Fishies)
 
 <!--Numerical results go here. Use the numerical results to describe the patterns if any that exist in the data as focused toward the research question!-->
 
-```{r}
-summary(Fishies)
-```
+
 
 ```{r}
 Perchmodel=lm(Weight~Length2+Width,data=Fishies)
 summary(Perchmodel)
+```
+
+```{r}
+Breammodel=lm(Weight~Length2+Width,data=FishiesB)
+summary(Breammodel)
+```
+
+```{r}
+Smeltmodel=lm(Weight~Length2+Length1,data=FishiesS)
+summary(Smeltmodel)
 ```
 
 ```{r}
@@ -79,6 +107,44 @@ as.data.frame(summary.out$outmat)
 library(car)
 subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
 ```
+
+According to the chart above, the best to estimate of perch in a subset size of 2 would be height and weight.  
+
+```{r}
+library(leaps)
+regsubsets.out <-
+    regsubsets(Weight ~ .,
+               data = FishiesB,
+               nbest = 1,       # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary.out <- summary(regsubsets.out)
+as.data.frame(summary.out$outmat)
+library(car)
+subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
+```
+  
+According to the chart above, the best to estimate of bream in a subset size of 2 would be Length2 and Height.    
+  
+```{r}
+library(leaps)
+regsubsets.out <-
+    regsubsets(Weight ~ .,
+               data = FishiesS,
+               nbest = 1,       # 1 best model for each number of predictors
+               nvmax = NULL,    # NULL for no limit on number of variables
+               force.in = NULL, force.out = NULL,
+               method = "exhaustive")
+
+summary.out <- summary(regsubsets.out)
+as.data.frame(summary.out$outmat)
+library(car)
+subsets(regsubsets.out,statistic="adjr2",legend="bottomright",main="Adjusted R^2")
+```
+
+According to the chart above, the best to estimate of smelt in a subset size of 2 would be Length2 and weight.
 
 ## Inferential Results
 
