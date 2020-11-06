@@ -58,6 +58,7 @@ pairs(FishiesS)
 
 I would estimate from the graph above that Length1 and Length2 may be the best variables to try and estimate weight in a linear model for smelt fish.
 
+  
 
 ```{r}
 FishiesB=filter(Fishdata, Species == "Bream")
